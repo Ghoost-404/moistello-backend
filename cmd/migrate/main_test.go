@@ -84,9 +84,8 @@ func TestMigrationIdempotencyAndRollback(t *testing.T) {
 				if cerr := db1.Close(); cerr != nil {
 					t.Logf("failed to close db1: %v", cerr)
 				}
-				done <- runErr
 			}()
-			runErr = Run(db1, Options{Direction: DirectionUp})
+			done <- Run(db1, Options{Direction: DirectionUp})
 		}()
 		go func() {
 			db2, err := sql.Open("postgres", os.Getenv("TEST_DATABASE_URL"))
@@ -94,14 +93,12 @@ func TestMigrationIdempotencyAndRollback(t *testing.T) {
 				done <- err
 				return
 			}
-			var runErr error
 			defer func() {
 				if cerr := db2.Close(); cerr != nil {
 					t.Logf("failed to close db2: %v", cerr)
 				}
-				done <- runErr
 			}()
-			runErr = Run(db2, Options{Direction: DirectionUp})
+			done <- Run(db2, Options{Direction: DirectionUp})
 		}()
 
 		for i := 0; i < 2; i++ {
